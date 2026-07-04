@@ -43,14 +43,12 @@ class ViberController
         }
     }
 
-    protected function isRequestValid()
+    protected function isRequestValid(): bool
     {
-        return  in_array(false, [
-            $this->isConfigured(),
-            $this->getSenderId(),
-            $this->getRecipientId(),
-            $this->getMessageText(),
-        ]);
+        return $this->isConfigured()
+            && !empty($this->getSenderId())
+            && !empty($this->getRecipientId())
+            && !empty($this->getMessageText());
     }
 
     protected function isConfigured(): bool

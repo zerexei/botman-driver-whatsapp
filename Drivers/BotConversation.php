@@ -30,7 +30,11 @@ class BotConversation extends BotmanConversation
                 $th->getTraceAsString()
             );
 
-            file_put_contents(__DIR__ . '/logs/error.log', $message, FILE_APPEND);
+            $logsDir = dirname(__DIR__) . '/logs';
+            if (!is_dir($logsDir)) {
+                mkdir($logsDir, 0755, true);
+            }
+            file_put_contents($logsDir . '/error.log', $message, FILE_APPEND);
         }
     }
 

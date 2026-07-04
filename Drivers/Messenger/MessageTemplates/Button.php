@@ -24,9 +24,11 @@ class Button implements \JsonSerializable
         switch ($this->type) {
             case "postback":
                 $payload['payload'] = $this->value;
+                break;
 
             case "web_url":
                 $payload["url"] = $this->value;
+                break;
         }
 
         return $payload;

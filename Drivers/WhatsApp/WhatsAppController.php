@@ -53,14 +53,12 @@ class WhatsAppController
         }
     }
 
-    protected function isRequestValid()
+    protected function isRequestValid(): bool
     {
-        return  in_array(false, [
-            $this->getConversationId(),
-            $this->getSenderId(),
-            $this->getRecipientId(),
-            $this->getMessageText(),
-        ]);
+        return !empty($this->getConversationId())
+            && !empty($this->getSenderId())
+            && !empty($this->getRecipientId())
+            && !empty($this->getMessageText());
     }
 
     protected function getConversationId(): string

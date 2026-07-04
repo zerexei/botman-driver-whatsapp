@@ -1,6 +1,6 @@
 <?php
 
-namespace Drivers\Template\MessageTemplates;
+namespace Drivers\Messenger\MessageTemplates;
 
 class TextTemplate implements \JsonSerializable
 {

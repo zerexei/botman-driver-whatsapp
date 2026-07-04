@@ -1,6 +1,6 @@
 <?php
 
-namespace Drivers\Viber\MessageTemplates;
+namespace Drivers\Messenger\MessageTemplates;
 
 class ImageTemplate implements \JsonSerializable
 {

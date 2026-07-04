@@ -41,12 +41,10 @@ class ViberDriver extends  HttpDriver
      */
     public function matchesRequest()
     {
-        return in_array(false, [
-            $this->isConfigured(),
-            $this->getSenderId(),
-            $this->getReceiverId(),
-            $this->getMessageText()
-        ]);
+        return $this->isConfigured()
+            && !empty($this->getSenderId())
+            && !empty($this->getReceiverId())
+            && !empty($this->getMessageText());
     }
 
     /**

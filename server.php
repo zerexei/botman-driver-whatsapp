@@ -2,7 +2,7 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use Drivers\Viber\MessengerController;
+use Drivers\Messenger\MessengerController;
 use Illuminate\Http\Request;
 use Drivers\Web\WebController;
 use Drivers\Viber\ViberController;
@@ -24,6 +24,12 @@ try {
     $instance = new $controller();
 
     $response = $instance($request);
+
+    if ($response instanceof \Symfony\Component\HttpFoundation\Response) {
+        $response->send();
+    } elseif (is_string($response) || is_numeric($response)) {
+        echo $response;
+    }
 } catch (\Throwable $th) {
     $message = sprintf(
         "[%s] %s in %s:%d\nStack trace:\n%s\n\n",
@@ -34,5 +40,9 @@ try {
         $th->getTraceAsString()
     );
 
-    file_put_contents(__DIR__ . '/logs/error.log', $message, FILE_APPEND);
+    $logsDir = __DIR__ . '/logs';
+    if (!is_dir($logsDir)) {
+        mkdir($logsDir, 0755, true);
+    }
+    file_put_contents($logsDir . '/error.log', $message, FILE_APPEND);
 }

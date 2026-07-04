@@ -1,6 +1,6 @@
 <?php
 
-namespace Drivers\Viber\MessageTemplates;
+namespace Drivers\Messenger\MessageTemplates;
 
 class GenericTemplate implements \JsonSerializable
 {
@@ -13,7 +13,7 @@ class GenericTemplate implements \JsonSerializable
 
     public function __construct() {}
 
-    public function addElement(\Drivers\Viber\MessageTemplates\Element $element): self
+    public function addElement(Element $element): self
     {
         $this->elements[] = $element->toArray();
         return $this;
@@ -22,7 +22,7 @@ class GenericTemplate implements \JsonSerializable
     public function addElements(array $elements): self
     {
         foreach ($elements as $element) {
-            if ($element instanceof \Drivers\Viber\MessageTemplates\Element) {
+            if ($element instanceof Element) {
                 $this->elements[] = $element->toArray();
             }
         }

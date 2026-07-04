@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 // https://developers.facebook.com/docs/whatsapp/messaging-limits
 class WhatsAppDriver extends  HttpDriver
 {
-    protected $endpoint = 'G';
+    protected $endpoint = 'https://graph.facebook.com/v24.0/';
 
     /** @var string */
     const DRIVER_NAME = 'WhatsApp';
@@ -43,13 +43,11 @@ class WhatsAppDriver extends  HttpDriver
      */
     public function matchesRequest()
     {
-        return in_array(false, [
-            $this->isConfigured(),
-            $this->payload->get('object') !== "whatsapp_business_account",
-            $this->getSenderId(),
-            $this->getReceiverId(),
-            $this->getMessageText()
-        ]);
+        return $this->isConfigured()
+            && $this->payload->get('object') === 'whatsapp_business_account'
+            && !empty($this->getSenderId())
+            && !empty($this->getReceiverId())
+            && !empty($this->getMessageText());
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drivers\Viber\MessageTemplates;
+namespace Drivers\Messenger\MessageTemplates;
 
 class QuickReplyTemplate implements \JsonSerializable
 {
@@ -17,7 +17,7 @@ class QuickReplyTemplate implements \JsonSerializable
 
     public function __construct(protected string $text) {}
 
-    public function addButton(\Drivers\Messenger\MessageTemplates\QuickReplyButton $button): self
+    public function addButton(QuickReplyButton $button): self
     {
         $this->buttons[] = $button->toArray();
         return $this;
@@ -26,7 +26,7 @@ class QuickReplyTemplate implements \JsonSerializable
     public function addButtons(array $buttons): self
     {
         foreach ($buttons as $button) {
-            if ($button instanceof \Drivers\Messenger\MessageTemplates\QuickReplyButton) {
+            if ($button instanceof QuickReplyButton) {
                 $this->buttons[] = $button->toArray();
             }
         }
