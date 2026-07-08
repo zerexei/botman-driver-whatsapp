@@ -4,12 +4,12 @@
 
 **Custom BotMan 2.x drivers for Messenger, WhatsApp Cloud API, and Viber**
 
-<img src="https://img.shields.io/packagist/v/zerexei/botman-drivers?label=packagist" alt="Packagist Version">
-<img src="https://img.shields.io/packagist/dt/zerexei/botman-drivers?label=downloads" alt="Total Downloads">
-<img src="https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white" alt="PHP 8.2+">
-<img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT">
-<img src="https://img.shields.io/badge/BotMan-2.x-00b96b?logoColor=white" alt="BotMan 2.x">
-<img src="https://img.shields.io/badge/autoload-PSR--4-8892BF?logo=php&logoColor=white" alt="PSR-4">
+<img src="https://img.shields.io/packagist/v/zerexei/botman-drivers.svg?style=flat-square" alt="Latest Version on Packagist" />
+<img src="https://img.shields.io/packagist/dt/zerexei/botman-drivers.svg?style=flat-square" alt="Total Downloads" />
+<img src="https://img.shields.io/badge/php-%3E%3D%208.2-777bb4.svg?style=flat-square" alt="PHP 8.2+" />
+<img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="MIT License" />
+<img src="https://img.shields.io/badge/BotMan-2.x-00b96b?style=flat-square&logoColor=white" alt="BotMan 2.x">
+<img src="https://img.shields.io/badge/PSR--4-compliant-brightgreen.svg?style=flat-square" alt="PSR-4 Compliant" />
 
 </div>
 
