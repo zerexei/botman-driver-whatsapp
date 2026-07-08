@@ -2,46 +2,43 @@
 
 namespace Drivers\WhatsApp\MessageTemplates;
 
+/**
+ * Builds a WhatsApp interactive list message.
+ *
+ * A list message presents a set of options in a scrollable menu. It requires
+ * a body text and at least one Button (row) grouped in a section.
+ *
+ * Usage:
+ *   $template = ButtonTemplate::create('Choose a category')
+ *       ->addButton(Button::create('1', 'Support'))
+ *       ->addButton(Button::create('2', 'Sales'));
+ *
+ * @see https://developers.facebook.com/docs/whatsapp/cloud-api/messages/interactive-list-messages
+ */
 class ButtonTemplate implements \JsonSerializable
 {
-    /** @var string */
-    protected $text;
+    protected array $buttons = [];
 
-    /** @var array */
-    protected $buttons = [];
-
-    /**
-     * @param $text
-     * @return static
-     */
-    public static function create($text)
+    public static function create(string $text, string $actionLabel = 'Options'): static
     {
-        return new static($text);
+        return new static($text, $actionLabel);
     }
 
-    public function __construct($text)
-    {
-        $this->text = $text;
-    }
+    public function __construct(
+        protected string $text,
+        protected string $actionLabel = 'Options',
+    ) {}
 
-    /**
-     * @param $button
-     * @return $this
-     */
-    public function addButton(\Drivers\WhatsApp\MessageTemplates\Button $button)
+    public function addButton(Button $button): self
     {
         $this->buttons[] = $button->toArray();
         return $this;
     }
 
-    /**
-     * @param array $buttons
-     * @return $this
-     */
-    public function addButtons(array $buttons)
+    public function addButtons(array $buttons): self
     {
         foreach ($buttons as $button) {
-            if ($button instanceof \Drivers\WhatsApp\MessageTemplates\Button) {
+            if ($button instanceof Button) {
                 $this->buttons[] = $button->toArray();
             }
         }
@@ -49,34 +46,28 @@ class ButtonTemplate implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         return [
-            'type' => "interactive",
+            'type'        => 'interactive',
             'interactive' => [
                 'type' => 'list',
-                "body" => [
-                    "text" => $this->text,
+                'body' => [
+                    'text' => $this->text,
                 ],
                 'action' => [
-                    "sections" => [
+                    'button'   => $this->actionLabel,
+                    'sections' => [
                         [
-                            "title" => "Options",
-                            "rows" => $this->buttons
-                        ]
+                            'title' => $this->actionLabel,
+                            'rows'  => $this->buttons,
+                        ],
                     ],
-                    "button" => "Options",
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): mixed
     {
         return $this->toArray();

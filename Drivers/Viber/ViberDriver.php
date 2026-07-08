@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 // src: https://developers.viber.com/docs/api/rest-bot-api
 // https://creators.viber.com/
-class ViberDriver extends  HttpDriver
+class ViberDriver extends HttpDriver
 {
     protected $endpoint = "https://chatapi.viber.com/pa";
 
@@ -76,13 +76,13 @@ class ViberDriver extends  HttpDriver
     public function buildServicePayload($message, $matchingMessage, $additionalParameters = [])
     {
         return [
-            'receiver' => $this->getReceiverId(),
+            'receiver'        => $this->getReceiverId(),
             'min_api_version' => 7,
-            'sender' => [
-                'name' => 'app-name', // The sender's name
-                'avatar' => 'sender-avatar-path', // The sender's avatar URL
+            'sender'          => [
+                'name'   => $this->config->get('name', 'Bot'),
+                'avatar' => $this->config->get('avatar', ''),
             ],
-            ...$message->toArray()
+            ...$message->toArray(),
         ];
     }
 

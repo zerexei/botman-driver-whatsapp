@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 // src: https://developers.facebook.com/docs/messenger-platform/send-messages/
-class MessengerDriver extends  HttpDriver
+class MessengerDriver extends HttpDriver
 {
     protected $endpoint = 'https://graph.facebook.com/v24.0/';
 
@@ -129,9 +129,7 @@ class MessengerDriver extends  HttpDriver
 
     public function getHeaders(): array
     {
-        return [
-            // ...
-        ];
+        return [];
     }
 
     public function isPostback(): bool

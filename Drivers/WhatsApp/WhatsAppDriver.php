@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 // src: https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages
 // https://developers.facebook.com/docs/whatsapp/messaging-limits
-class WhatsAppDriver extends  HttpDriver
+class WhatsAppDriver extends HttpDriver
 {
     protected $endpoint = 'https://graph.facebook.com/v24.0/';
 
@@ -79,11 +79,10 @@ class WhatsAppDriver extends  HttpDriver
     public function buildServicePayload($message, $matchingMessage, $additionalParameters = [])
     {
         return [
-            "messaging_product" => "whatsapp",
-            "recipient_type" => "individual",
-            "to" => $this->getReceiverId(),
-            "senderId" => $this->getSenderId(),
-            ...$message->toArray()
+            'messaging_product' => 'whatsapp',
+            'recipient_type'    => 'individual',
+            'to'                => $this->getReceiverId(),
+            ...$message->toArray(),
         ];
     }
 

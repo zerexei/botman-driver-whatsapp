@@ -2,43 +2,31 @@
 
 namespace Drivers\WhatsApp\MessageTemplates;
 
+/**
+ * Represents a single row in a WhatsApp interactive list message.
+ *
+ * @see https://developers.facebook.com/docs/whatsapp/cloud-api/messages/interactive-list-messages
+ */
 class Button implements \JsonSerializable
 {
-    /** @var int */
-    protected $id;
-
-    /** @var string */
-    protected $text;
-
-    /**
-     * @param $text
-     * @return static
-     */
-    public static function create($id, $text)
+    public static function create(string|int $id, string $text): static
     {
         return new static($id, $text);
     }
 
-    public function __construct($id, $text)
-    {
-        $this->id = $id;
-        $this->text = $text;
-    }
+    public function __construct(
+        protected string|int $id,
+        protected string $text,
+    ) {}
 
-    /**
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         return [
-            "id" => $this->id,
-            "text" => $this->text,
+            'id'   => (string) $this->id,
+            'text' => $this->text,
         ];
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): mixed
     {
         return $this->toArray();

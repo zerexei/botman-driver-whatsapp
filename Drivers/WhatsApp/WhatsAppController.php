@@ -2,75 +2,78 @@
 
 namespace Drivers\WhatsApp;
 
-use Illuminate\Http\Request;
-
 use BotMan\BotMan\BotMan;
-use BotMan\BotMan\BotManFactory;
-use BotMan\BotMan\Cache\LaravelCache;
-use BotMan\BotMan\Drivers\DriverManager;
-
+use Illuminate\Http\Request;
+use Drivers\BaseController;
 use Drivers\BotConversation;
-use Drivers\WhatsApp\WhatsAppDriver;
+use Drivers\Config;
 
-class WhatsAppController
+/**
+ * Webhook controller for the WhatsApp Cloud API.
+ *
+ * Handles both the one-time webhook verification handshake (GET with
+ * hub.challenge) and live message events (POST with an `entry` array).
+ *
+ * @see https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks
+ */
+class WhatsAppController extends BaseController
 {
     /**
-     * Handle the incoming request.
+     * Respond to Meta's webhook verification handshake.
+     *
+     * Meta sends a GET request with hub.mode=subscribe, hub.challenge, and
+     * hub.verify_token. We validate the token and echo back the challenge.
      */
-    public function __invoke(Request $request)
+    protected function handleVerification(Request $request): mixed
     {
-        try {
-            // Verify webhook
-            $challenge = $request->hub_challenge;
+        $challenge = $request->hub_challenge;
 
-            if ($challenge) {
-                $secret = $request->hub_verify_token;
-                if ($secret !== 'your-secret-token') return;
-                return $challenge;
-            }
-
-            if (!$this->isRequestValid()) {
-                return response()->json();
-            }
-
-            $config =  [
-                'whatsApp' => [
-                    'token' => 'your-meta-app-access-token',
-                ]
-            ];
-
-            // 
-            DriverManager::loadDriver(WhatsAppDriver::class);
-            $botman = BotManFactory::create($config, new LaravelCache());
-
-            //
-            $botman->fallback(fn(BotMan $bot)  => $bot->startConversation(new BotConversation));
-
-            //
-            $botman->listen();
-        } catch (\Throwable $th) {
-            return response()->json();
+        if (!$challenge) {
+            return null;
         }
+
+        if ($request->hub_verify_token !== Config::get('WHATSAPP_VERIFY_TOKEN')) {
+            return response()->json(['error' => 'Invalid verify token'], 403);
+        }
+
+        return $challenge;
     }
 
     protected function isRequestValid(): bool
     {
-        return !empty($this->getConversationId())
+        return $this->isConfigured()
+            && !empty(request('entry.0.id'))
             && !empty($this->getSenderId())
             && !empty($this->getRecipientId())
             && !empty($this->getMessageText());
     }
 
-    protected function getConversationId(): string
+    protected function driverClass(): string
     {
-        return (string) request("entry.0.id");
+        return WhatsAppDriver::class;
     }
 
+    protected function botmanConfig(): array
+    {
+        return [
+            'whatsApp' => [
+                'token' => Config::get('WHATSAPP_ACCESS_TOKEN'),
+            ],
+        ];
+    }
+
+    protected function isConfigured(): bool
+    {
+        return !empty(Config::get('WHATSAPP_ACCESS_TOKEN'));
+    }
+
+    /** The user's phone number — the sender of the incoming message. */
     protected function getSenderId(): string
     {
         return (string) request('entry.0.changes.0.value.messages.0.from');
     }
 
+    /** The business phone number ID — the bot's identity on WhatsApp. */
     protected function getRecipientId(): string
     {
         return (string) request('entry.0.changes.0.value.metadata.phone_number_id');
@@ -79,5 +82,10 @@ class WhatsAppController
     protected function getMessageText(): string
     {
         return (string) request('entry.0.changes.0.value.messages.0.text.body');
+    }
+
+    protected function registerHandlers(BotMan $botman): void
+    {
+        $botman->fallback(fn(BotMan $bot) => $bot->startConversation(new BotConversation));
     }
 }

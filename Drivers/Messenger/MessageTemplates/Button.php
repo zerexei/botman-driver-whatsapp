@@ -4,7 +4,7 @@ namespace Drivers\Messenger\MessageTemplates;
 
 class Button implements \JsonSerializable
 {
-    public static function create($text, $type = 'button', $value = ''): static
+    public static function create($text, $type = 'postback', $value = ''): static
     {
         return new static($text, $type, $value);
     }

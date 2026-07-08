@@ -2,30 +2,52 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
+// ── Load .env ─────────────────────────────────────────────────────────────────
+// Simple .env loader for the standalone PHP playground.
+// In a Laravel app this is handled by the framework; remove this block there.
+$envFile = __DIR__ . '/.env';
+if (file_exists($envFile)) {
+    foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        $line = trim($line);
+        if ($line === '' || str_starts_with($line, '#') || !str_contains($line, '=')) {
+            continue;
+        }
+        [$key, $value] = explode('=', $line, 2);
+        putenv(trim($key) . '=' . trim($value));
+    }
+}
+
+// ── Route request to the appropriate driver controller ────────────────────────
 use Drivers\Messenger\MessengerController;
-use Illuminate\Http\Request;
-use Drivers\Web\WebController;
 use Drivers\Viber\ViberController;
+use Drivers\Web\WebController;
 use Drivers\WhatsApp\WhatsAppController;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 try {
-    // Create a Request instance
     $request = Request::capture();
 
     $driver = $request->input('driver');
 
-    $controller = match ($driver) {
-        'web' => WebController::class,
+    $controllerClass = match ($driver) {
+        'web'       => WebController::class,
         'messenger' => MessengerController::class,
-        'whatsApp' => WhatsAppController::class,
-        'viber' => ViberController::class,
+        'whatsApp'  => WhatsAppController::class,
+        'viber'     => ViberController::class,
+        default     => null,
     };
 
-    $instance = new $controller();
+    if ($controllerClass === null) {
+        http_response_code(400);
+        echo json_encode(['error' => "Unknown driver: '{$driver}'. Valid values: web, messenger, whatsApp, viber."]);
+        exit;
+    }
 
-    $response = $instance($request);
+    $controller = new $controllerClass();
+    $response = $controller($request);
 
-    if ($response instanceof \Symfony\Component\HttpFoundation\Response) {
+    if ($response instanceof Response) {
         $response->send();
     } elseif (is_string($response) || is_numeric($response)) {
         echo $response;
@@ -45,4 +67,7 @@ try {
         mkdir($logsDir, 0755, true);
     }
     file_put_contents($logsDir . '/error.log', $message, FILE_APPEND);
+
+    http_response_code(500);
+    echo json_encode(['error' => 'Internal server error']);
 }

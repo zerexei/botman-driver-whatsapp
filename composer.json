@@ -1,5 +1,16 @@
 {
+  "name": "zerexei/botman-drivers",
+  "version": "0.1.0",
+  "description": "Custom BotMan driver collection for Messenger, WhatsApp Cloud API, Viber, and a local web playground.",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Angelo Arcillas",
+      "email": "angeloarcillas64@gmail.com"
+    }
+  ],
   "require": {
+    "php": "^8.2",
     "botman/botman": "^2.8",
     "botman/driver-web": "^1.5",
     "illuminate/http": "^12.35"
@@ -8,5 +19,8 @@
     "psr-4": {
       "Drivers\\": "Drivers/"
     }
+  },
+  "config": {
+    "optimize-autoloader": true
   }
 }

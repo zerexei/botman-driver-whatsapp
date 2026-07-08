@@ -3,57 +3,38 @@
 namespace Drivers\Messenger;
 
 use BotMan\BotMan\BotMan;
-use BotMan\BotMan\BotManFactory;
-use BotMan\BotMan\Cache\LaravelCache;
 use BotMan\BotMan\Drivers\DriverManager;
-
+use Drivers\BaseController;
 use Drivers\BotConversation;
-use Drivers\Messenger\MessengerDriver;
+use Drivers\Config;
 
-class MessengerController
+/**
+ * Webhook controller for the Facebook Messenger platform.
+ *
+ * Webhook events arrive as POST requests containing an `entry` array.
+ * Each entry holds a `messaging` array with sender, recipient, and message.
+ *
+ * @see https://developers.facebook.com/docs/messenger-platform/webhooks
+ */
+class MessengerController extends BaseController
 {
-    /**
-     * Handle the incoming request.
-     */
-    public function __invoke()
+    protected function driverClass(): string
     {
-        try {
-            $config =  [
-                "messenger" => [
-                    'token' => 'your-meta-app-access-token',
-                ]
-            ];
-
-            if (!$this->isRequestValid()) {
-                return response()->json();
-            }
-
-            // 
-            DriverManager::loadDriver(MessengerDriver::class);
-            $botman = BotManFactory::create($config, new LaravelCache());
-
-            //
-            $botman->fallback(fn(BotMan $bot)  => $bot->startConversation(new BotConversation));
-
-            //
-            $botman->listen();
-        } catch (\Throwable $th) {
-            // laravel respose class
-            return response()->json();
-        }
+        return MessengerDriver::class;
     }
 
-    protected function isRequestValid(): bool
+    protected function botmanConfig(): array
     {
-        return $this->isConfigured()
-            && !empty($this->getSenderId())
-            && !empty($this->getRecipientId())
-            && !empty($this->getMessageText());
+        return [
+            'messenger' => [
+                'token' => Config::get('MESSENGER_ACCESS_TOKEN'),
+            ],
+        ];
     }
 
     protected function isConfigured(): bool
     {
-        return (bool) request('token', false);
+        return !empty(Config::get('MESSENGER_ACCESS_TOKEN'));
     }
 
     protected function getSenderId(): string
@@ -66,7 +47,7 @@ class MessengerController
         return (string) request('entry.0.messaging.0.recipient.id');
     }
 
-    public function isPostback(): bool
+    protected function isPostback(): bool
     {
         return (bool) request('entry.0.messaging.0.postback');
     }
@@ -78,5 +59,10 @@ class MessengerController
         }
 
         return (string) request('entry.0.messaging.0.message.text');
+    }
+
+    protected function registerHandlers(BotMan $botman): void
+    {
+        $botman->fallback(fn(BotMan $bot) => $bot->startConversation(new BotConversation));
     }
 }

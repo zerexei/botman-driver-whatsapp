@@ -50,7 +50,7 @@ class BotConversation extends BotmanConversation
     {
         // your logic here ...
 
-        $message = "You said: " . $answer->getValue() ?? $answer->getText();
+        $message = 'You said: ' . ($answer->getValue() ?: $answer->getText());
         $this->say($message);
 
         $this->handleAsk("Guess a number from 1 to 10:");

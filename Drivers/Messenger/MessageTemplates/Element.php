@@ -4,7 +4,8 @@ namespace Drivers\Messenger\MessageTemplates;
 
 class Element implements \JsonSerializable
 {
-    protected array $buttons;
+    protected array $buttons = [];
+
 
     public static function create($title, $subtitle, $imageUrl): static
     {
@@ -17,7 +18,7 @@ class Element implements \JsonSerializable
         protected string $imageUrl
     ) {}
 
-    public function addButton(\Drivers\Messenger\MessageTemplates\Button $button): self
+    public function addButton(Button $button): self
     {
         $this->buttons[] = $button->toArray();
 
@@ -27,7 +28,7 @@ class Element implements \JsonSerializable
     public function addButtons(array $buttons): self
     {
         foreach ($buttons as $button) {
-            if ($button instanceof \Drivers\Messenger\MessageTemplates\Button) {
+            if ($button instanceof Button) {
                 $this->buttons[] = $button->toArray();
             }
         }
